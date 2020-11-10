@@ -46,7 +46,7 @@ exports.loadData = (req, res) => {
         });
 
         redisClient.hmset(`engagements:${uuid.v1()}`, {
-            'in_out': 'in',
+            'in_out': 'out',
             'deviceId': deviceId,
             'branchId': branchId,
             'timestamp': (new Date()).getTime() + Math.round(Math.random() * 900000) //some random time under 15 minutes later
