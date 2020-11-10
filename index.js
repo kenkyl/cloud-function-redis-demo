@@ -65,7 +65,7 @@ exports.consumeData = (req, res) => {
             keys.forEach(function (key) {
                 redisClient.hgetall(key, function(err, engagement) {
                     console.log(engagement);
-                    let queryStr = `INSERT INTO ENGAGED (DeviceId, BranchId, in_out, timestamp) VALUES (${engagement.deviceId}, ${engagement.branchId}, ${engagement.in_out}), ${engagement.timestamp})`;
+                    let queryStr = `INSERT INTO ENGAGED (DeviceId, BranchId, in_out, timestamp) VALUES (${engagement.deviceId}, ${engagement.branchId}, ${engagement.in_out}, ${engagement.timestamp})`;
                     sqlClient.query(queryStr, function(err, result) {
                         if (err) {
                             console.error(err);
