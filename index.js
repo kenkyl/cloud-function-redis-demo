@@ -24,6 +24,12 @@ var sqlClient = mysql.createConnection({
 
 sqlClient.connect();
 
+exports.createTable = (req, res) => {
+
+    sqlClient.query("CREATE TABLE ENGAGED( DeviceID varchar(255), BranchId varchar(255), in_out varchar(255), timestamp varchar(255) )");
+
+    res.status(200).send("Table Created");
+}
 
 exports.loadData = (req, res) => {
     for (let i = 0; i <= thisMany; i++) {
@@ -32,15 +38,17 @@ exports.loadData = (req, res) => {
         let deviceId = uuid.v4();
         let branchId = uuid.v4();
 
-        redisClient.hmset(uuid.v1(), {
+        redisClient.hmset(`engagements:${uuid.v1()}`, {
             'in_out': 'in',
             'deviceId': deviceId,
             'branchId': branchId,
             'timestamp': (new Date()).getTime()
         });
 
-        redisClient.hmset(uuid.v1(), {
-            'in_out': 'out',
+        redisClient.hmset(`engagements:${uuid.v1()}`, {
+            'in_out': 'in',
+            'deviceId': deviceId,
+            'branchId': branchId,
             'timestamp': (new Date()).getTime() + Math.round(Math.random() * 900000) //some random time under 15 minutes later
         });
     }
@@ -57,7 +65,15 @@ exports.consumeData = (req, res) => {
             keys.forEach(function (key) {
                 redisClient.hgetall(key, function(err, engagement) {
                     console.log(engagement);
-                    let queryStr = 'INSERT INTO ENGAGEMENTS ()';
+                    let queryStr = `INSERT INTO ENGAGED (DeviceId, BranchId, in_out, timestamp) VALUES (${engagement.deviceId}, ${engagement.branchId}, ${engagement.in_out}), ${engagement.timestamp})`;
+                    sqlClient.query(queryStr, function(err, result) {
+                        if (err) {
+                            console.error(err);
+                            res.status(500).send(err);
+                        } else {
+                            console.log(`RESULT: ${result}`);
+                        }
+                    });
                 });
             });
         }
