@@ -32,16 +32,16 @@ exports.loadData = (req, res) => {
         let deviceId = uuid.v4();
         let branchId = uuid.v4();
 
-        redisClient.hset(uuid.v1(), {
+        redisClient.hmset(uuid.v1(), {
             'in_out': 'in',
             'deviceId': deviceId,
             'branchId': branchId,
-            'timestamp_in': (new Date()).getTime()
+            'timestamp': (new Date()).getTime()
         });
 
-        redisClient.hset(uuid.v1(), {
+        redisClient.hmset(uuid.v1(), {
             'in_out': 'out',
-            'timestamp_out': (new Date()).getTime() + Math.round(Math.random() * 900000) //some random time under 15 minutes later
+            'timestamp': (new Date()).getTime() + Math.round(Math.random() * 900000) //some random time under 15 minutes later
         });
     }
 
@@ -49,7 +49,19 @@ exports.loadData = (req, res) => {
 }
 
 exports.consumeData = (req, res) => {
-    
+    redisClient.keys('*', function(err, keys) {
+        if (err) {
+            console.error(err);
+            res.status(500).send(err);
+        } else {
+            keys.forEach(function (key) {
+                redisClient.hgetall(key, function(err, engagement) {
+                    console.log(engagement);
+                    let queryStr = 'INSERT INTO ENGAGEMENTS ()';
+                });
+            });
+        }
+    });
 }
 
 exports.helloWorld = (req, res) => {
