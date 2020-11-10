@@ -69,9 +69,8 @@ exports.consumeData = (req, res) => {
                     sqlClient.query(queryStr, function(err, result) {
                         if (err) {
                             console.error(err);
-                            res.status(500).send(err);
                         } else {
-                            console.log(`RESULT: ${result}`);
+                            console.log(`pushed engagement ${key} to CloudSQL`);
                         }
                     });
                 });
