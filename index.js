@@ -77,6 +77,8 @@ exports.consumeData = (req, res) => {
             });
         }
     });
+
+    res.status(200).send("Successfully pushed engagement data to CloudSQL");
 }
 
 exports.helloWorld = (req, res) => {
